@@ -2,3 +2,4 @@ Django==2.2
 djangorestframework==3.9.4
 Pillow==6.0.0
 python-dotenv==0.10.3
+django-filter==2.2.0
