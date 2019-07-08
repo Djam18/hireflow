@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'accounts',
     'jobs',
     'candidates',
+    'pipeline',
 ]
 
 MIDDLEWARE = [

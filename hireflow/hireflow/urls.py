@@ -8,6 +8,7 @@ urlpatterns = [
     path('api/accounts/', include('accounts.urls')),
     path('api/', include('jobs.urls')),
     path('api/', include('candidates.urls')),
+    path('api/', include('pipeline.urls')),
 ]
 
 if settings.DEBUG:
