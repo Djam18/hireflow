@@ -5,3 +5,4 @@ python-dotenv==0.10.3
 django-filter==2.2.0
 celery==4.3.0
 redis==3.3.11
+djangorestframework-simplejwt==3.3
