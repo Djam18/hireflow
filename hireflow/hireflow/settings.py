@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'pipeline',
     'notifications',
     'interviews',
+    'analytics',
 ]
 
 MIDDLEWARE = [
