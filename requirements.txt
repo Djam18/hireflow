@@ -6,3 +6,7 @@ django-filter==2.2.0
 celery==4.3.0
 redis==3.3.11
 djangorestframework-simplejwt==3.3
+pytest==5.2.2
+pytest-django==3.6.0
+factory_boy==2.12.0
+Faker==2.0.3
