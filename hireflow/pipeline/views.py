@@ -4,7 +4,6 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Application, StageHistory
 from .serializers import ApplicationSerializer, TransitionSerializer
-from notifications.tasks import send_stage_change_email
 
 
 class ApplicationViewSet(viewsets.ModelViewSet):
@@ -38,20 +37,13 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         except ValueError as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Creating StageHistory fires the signal which sends email notification
         StageHistory.objects.create(
             application=application,
             from_stage=old_stage,
             to_stage=new_stage,
             changed_by=request.user,
             notes=notes,
-        )
-
-        candidate = application.candidate
-        send_stage_change_email.delay(
-            candidate_email=candidate.email,
-            candidate_name=f"{candidate.first_name} {candidate.last_name}",
-            job_title=application.job.title,
-            new_stage=new_stage,
         )
 
         return Response(ApplicationSerializer(application).data)
