@@ -1,4 +1,4 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -48,3 +48,29 @@ class CandidateViewSet(viewsets.ModelViewSet):
             ).distinct()
             result[stage_value] = CandidateSerializer(candidates, many=True).data
         return Response(result)
+
+    @action(detail=False, methods=['post'], url_path='bulk-delete')
+    def bulk_delete(self, request):
+        """Delete multiple candidates by IDs."""
+        ids = request.data.get('ids', [])
+        if not ids:
+            return Response({'error': 'No IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        deleted_count, _ = Candidate.objects.filter(id__in=ids).delete()
+        return Response({'deleted': deleted_count})
+
+    @action(detail=False, methods=['post'], url_path='bulk-tag')
+    def bulk_tag(self, request):
+        """Add a tag/note to multiple candidates (basic implementation)."""
+        ids = request.data.get('ids', [])
+        note = request.data.get('note', '')
+        if not ids:
+            return Response({'error': 'No IDs provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # basic: just return which candidates were targeted
+        candidates = Candidate.objects.filter(id__in=ids)
+        return Response({
+            'updated': candidates.count(),
+            'note': note,
+            'candidate_ids': list(candidates.values_list('id', flat=True)),
+        })
