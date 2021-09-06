@@ -1,9 +1,10 @@
 from celery import shared_task
-from django.core.mail import send_mail
+from django.core.mail import send_mail, BadHeaderError
 from django.conf import settings
 
 
-@shared_task
+# Celery 5.0: autoretry_for replaces manual self.retry() boilerplate
+@shared_task(autoretry_for=(Exception,), max_retries=3, retry_backoff=True)
 def send_stage_change_email(candidate_email, candidate_name, job_title, new_stage):
     """Send email notification when a candidate moves to a new pipeline stage.
 
@@ -34,7 +35,7 @@ def send_stage_change_email(candidate_email, candidate_name, job_title, new_stag
     return {"sent": True, "to": candidate_email, "stage": new_stage}
 
 
-@shared_task
+@shared_task(autoretry_for=(Exception,), max_retries=3, retry_backoff=True)
 def send_interview_reminder(candidate_email, candidate_name, job_title, interview_time):
     """Send interview reminder 24 hours before scheduled time.
 

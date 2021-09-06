@@ -83,11 +83,12 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Celery
+# Celery 5.1
 CELERY_BROKER_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+CELERY_TASK_TRACK_STARTED = True  # Celery 5: track STARTED state for better monitoring
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@hireflow.com'
