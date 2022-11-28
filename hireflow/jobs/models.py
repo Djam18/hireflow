@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from tenants.models import Company
 
 
 class JobType(models.TextChoices):
@@ -19,6 +20,8 @@ class Job(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     posted_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # Multi-tenant isolation: every job belongs to one company
+    company = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE, related_name='jobs')
 
     def __str__(self):
         return self.title
