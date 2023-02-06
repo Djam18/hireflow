@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "hireflow"
+version = "0.1.0"
+description = "Applicant Tracking System — ATS built with Django REST Framework"
+requires-python = ">=3.11"
+dependencies = [
+    "Django==4.2",
+    "djangorestframework==3.14.0",
+    "Pillow>=9.0",
+    "python-dotenv>=1.0",
+    "django-filter>=22.1",
+    "celery>=5.3",
+    "redis>=4.6",
+    "djangorestframework-simplejwt>=5.3",
+    "psycopg2-binary>=2.9",
+    "dj-database-url>=2.0",
+    "pydantic-settings>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "pytest-django>=4.7",
+    "pytest-cov>=4.1",
+    "factory_boy>=3.3",
+    "Faker>=19.0",
+    "mypy>=1.4",
+    "django-stubs>=4.2",
+    "djangorestframework-stubs>=3.14",
+    "ruff>=0.1",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "DJ"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["accounts", "jobs", "candidates", "pipeline", "notifications", "interviews", "analytics", "tenants"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+plugins = ["mypy_django_plugin.main"]
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "hireflow.settings"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "hireflow.settings"
+python_files = ["tests/*.py", "tests/**/*.py"]
+addopts = "-v --tb=short"
+
+[tool.coverage.run]
+source = ["."]
+omit = ["*/migrations/*", "manage.py", "hireflow/settings.py"]
