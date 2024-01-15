@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: hireflow_test
+          POSTGRES_USER: hireflow
+          POSTGRES_PASSWORD: hireflow_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:6-alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint with ruff
+        run: ruff check hireflow/
+
+      - name: Type check with mypy
+        run: mypy hireflow/ --ignore-missing-imports
+        continue-on-error: true
+
+      - name: Run tests with coverage
+        run: pytest --cov=hireflow --cov-report=term-missing --cov-fail-under=60
+        env:
+          DATABASE_URL: postgres://hireflow:hireflow_password@localhost:5432/hireflow_test
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: ci-test-secret-key-not-for-production
+          DEBUG: "True"
+
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v3
+        if: always()
+        with:
+          fail_ci_if_error: false
