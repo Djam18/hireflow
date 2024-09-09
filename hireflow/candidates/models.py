@@ -12,6 +12,8 @@ class Candidate(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     # Multi-tenant isolation
     company = models.ForeignKey(Company, null=True, blank=True, on_delete=models.CASCADE, related_name='candidates')
+    # AI scoring: {"ai_score_job_42": {"score": 87.3, "model": "text-embedding-3-small", ...}}
+    metadata = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
