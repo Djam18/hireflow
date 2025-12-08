@@ -114,6 +114,10 @@ CELERY_TASK_TRACK_STARTED = True  # Celery 5: track STARTED state for better mon
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'noreply@hireflow.com'
 
+# Django 6.0: native background tasks (no broker for simple jobs)
+# Complex tasks (AI scoring, bulk email) stay on Celery
+TASKS_RUNNER = 'django.tasks.runners.ThreadedTaskRunner'
+
 # JWT
 from datetime import timedelta
 
